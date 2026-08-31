@@ -28,3 +28,8 @@ case class Cron(
     val month: CronFragment,
     val weekday: CronFragment
 )
+
+object Cron {
+    def fromCronFragments(l: ListBuffer[CronFragment]): Cron =
+        Cron(l(0), l(1), l(2), l(3), l(4))
+}

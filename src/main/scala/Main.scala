@@ -1,6 +1,12 @@
+import domain.parser.Parser
+import domain.parser.Lexer
+
 @main
 def hello(): Unit =
-  println("Hello world!")
-  println(msg)
+  val parser = new Parser(Lexer.make(""))
+  val result = parser.parse("99 * * * *") match {
+    case Left(value) => ???
+    case Right(value) => value
+  }
 
-def msg = "I was compiled by Scala 3. :)"
+  println(result)
