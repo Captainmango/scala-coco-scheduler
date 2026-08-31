@@ -32,4 +32,22 @@ class LexerTest extends munit.FunSuite {
         val res = l.lex().getOrElse(())
         assertEquals(expectedOut, res)
     }
+
+    test("it errors if input isn't correct") {
+        val l = Lexer.make("*a")
+
+        l.lex() match {
+            case Left(value) => assert(value.isInstanceOf[InvalidInput])
+            case Right(value) => fail("Should have failed with error")
+        }
+    }
+
+    test("it errors if it cannot read number where a number should be") {
+        val l = Lexer.make("*/ddd")
+
+        l.lex() match {
+            case Left(value) => assert(value.isInstanceOf[ExpectedNumber])
+            case Right(value) => fail("Should have failed with error")
+        }
+    }
 }
