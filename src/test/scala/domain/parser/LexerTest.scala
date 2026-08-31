@@ -18,7 +18,7 @@ class LexerTest extends munit.FunSuite {
         val l = Lexer.make("*")
         val expectedOut = ListBuffer[AbstractCronFragment](Wildcard("*"))
         val res = l.lex() match {
-            case Left(e) => fail(s"Recieved unexpected error ${e.message()}")
+            case Left(e) => fail(s"Recieved unexpected error $e}")
             case Right(out) => out
         }
 
@@ -37,7 +37,10 @@ class LexerTest extends munit.FunSuite {
         val l = Lexer.make("*a")
 
         l.lex() match {
-            case Left(value) => assert(value.isInstanceOf[InvalidInput])
+            case Left(value) => {
+                assert(value.isInstanceOf[InvalidInput])
+                assertEquals("Invalid input at 1. Near *a", value.toString())
+            }
             case Right(value) => fail("Should have failed with error")
         }
     }
@@ -46,7 +49,22 @@ class LexerTest extends munit.FunSuite {
         val l = Lexer.make("*/ddd")
 
         l.lex() match {
-            case Left(value) => assert(value.isInstanceOf[ExpectedNumber])
+            case Left(value) => {
+                assert(value.isInstanceOf[ExpectedNumber])
+                assertEquals("Expected number at 2. Near */d", value.toString())
+            }
+            case Right(value) => fail("Should have failed with error")
+        }
+    }
+
+    test("it errors if not valid input") {
+        val l = Lexer.make("d")
+
+        l.lex() match {
+            case Left(value) => {
+                assert(value.isInstanceOf[InvalidInput])
+                assertEquals("Invalid input at 0. Near d", value.toString())
+            }
             case Right(value) => fail("Should have failed with error")
         }
     }

@@ -33,6 +33,7 @@ class Lexer(
             val frag = token match {
                 case '*' => handleAsterisk()
                 case EOC => return Right(out)
+                case _: Char => Left(InvalidInput(readRawInput(), readPos))
             }
 
             frag match {
@@ -93,7 +94,7 @@ class Lexer(
         readPos = pos
     }
 
-    private def readRawInput(): String = _input.slice(currPos, readPos)
+    private def readRawInput(): String = _input.slice(currPos, readPos+1)
 
     private def readNumber(): Int = {
         val tempReadPos = readPos

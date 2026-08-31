@@ -1,11 +1,9 @@
 package domain.parser
 
-sealed trait ParserError {
-    def message(): String
-}
+sealed trait ParserError
 case class InvalidInput(raw: String, position: Int) extends ParserError {
-    override def message(): String = s"Invalid input at $position. Near $raw"
+    override def toString(): String = s"Invalid input at $position. Near $raw"
 }
 case class ExpectedNumber(raw: String, position: Int) extends ParserError {
-    override def message(): String = s"Expected Number at $position. Near $raw"
+    override def toString(): String = s"Expected number at $position. Near $raw"
 }
