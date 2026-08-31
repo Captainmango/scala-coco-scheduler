@@ -2,13 +2,12 @@ package domain.parser
 
 import scala.collection.mutable.ListBuffer
 
-
 enum CronInterval(val lowerBound: Int, val upperBound: Int) {
-    case MINUTE extends CronInterval(0, 59)
-    case HOUR extends CronInterval(0, 23)
-    case DAY_OF_MONTH extends CronInterval(1, 31)
-    case MONTH extends CronInterval(1, 12)
-    case WEEKDAY extends CronInterval(1, 7)
+  case MINUTE extends CronInterval(0, 59)
+  case HOUR extends CronInterval(0, 23)
+  case DAY_OF_MONTH extends CronInterval(1, 31)
+  case MONTH extends CronInterval(1, 12)
+  case WEEKDAY extends CronInterval(1, 7)
 }
 
 sealed trait AbstractCronFragment
