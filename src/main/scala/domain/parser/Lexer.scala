@@ -28,7 +28,7 @@ class Lexer(
         var out = ListBuffer[AbstractCronFragment]()
 
         while (currPos < bounds) {
-            val token = getCurrToken()
+            var token = getCurrToken()
 
             val frag = token match {
                 case '*' => handleAsterisk()
@@ -121,9 +121,11 @@ class Lexer(
         readPos += by
 
     private def syncCurrAndReadPos() = {
-        val pos = readPos
-        currPos = pos
-        readPos = pos
+        if (readPos > currPos) {
+            currPos = readPos
+        } else {
+            readPos = currPos
+        }
     }
 
     private def readRawInput(): String = _input.slice(currPos, readPos+1).trim()
