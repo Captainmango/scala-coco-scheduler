@@ -1,5 +1,7 @@
 package domain.parser
 
+import scala.collection.mutable.ListBuffer
+
 
 enum CronInterval(val lowerBound: Int, val upperBound: Int) {
     case MINUTE extends CronInterval(0, 59)
@@ -16,7 +18,7 @@ case class CronList(val raw: String, val items: List[Int]) extends AbstractCronF
 case class Divisor(val raw: String, val operand: Int) extends AbstractCronFragment
 case class Wildcard(val raw: String) extends AbstractCronFragment
 
-type AbstractCronFragmentList = List[AbstractCronFragment]
+type AbstractCronFragmentList = ListBuffer[AbstractCronFragment]
 
 case class CronFragment(val interval: CronInterval, val abstractFragment: AbstractCronFragment)
 
