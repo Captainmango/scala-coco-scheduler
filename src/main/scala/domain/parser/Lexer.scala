@@ -32,6 +32,7 @@ class Lexer(
 
             val frag = token match {
                 case '*' => handleAsterisk()
+                case c if c.isDigit => handleDigit()
                 case EOC => return Right(out)
                 case _: Char => Left(InvalidInput(readRawInput(), readPos))
             }
@@ -74,6 +75,37 @@ class Lexer(
         }
     }
 
+    private def handleDigit(): Either[ParserError, AbstractCronFragment] = {
+        val num = readNumber()
+        var currToken = getReadToken()
+        currToken match {
+            case ' ' | EOC => {
+                val cf = Single(readRawInput(), num)
+                incrementReadPos()
+                Right(cf)
+            }
+            case '-' => {
+                incrementReadPos()
+                currToken = getReadToken()
+                if (!currToken.isDigit) then return Left(ExpectedNumber(readRawInput(), readPos))
+                val topOfRange = readNumber()
+                val cf = Range(readRawInput(), bottom = num, top = topOfRange )
+                incrementReadPos()
+                Right(cf)
+            }
+            case ',' => {
+                incrementReadPos()
+                currToken = getReadToken()
+                if (!currToken.isDigit) then return Left(ExpectedNumber(readRawInput(), readPos))
+                val numTwo = readNumber()
+                val cf = CronList(readRawInput(), List(num, numTwo))
+                incrementReadPos()
+                Right(cf)
+            }
+            case _: Char => Left(InvalidInput(readRawInput(), readPos))
+        }
+    }
+
     private def getCurrToken(): Char = 
         if currPos >= _input.length then EOC
         else _input.charAt(currPos)
@@ -94,7 +126,7 @@ class Lexer(
         readPos = pos
     }
 
-    private def readRawInput(): String = _input.slice(currPos, readPos+1)
+    private def readRawInput(): String = _input.slice(currPos, readPos+1).trim()
 
     private def readNumber(): Int = {
         val tempReadPos = readPos

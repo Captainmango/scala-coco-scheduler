@@ -68,4 +68,99 @@ class LexerTest extends munit.FunSuite {
             case Right(value) => fail("Should have failed with error")
         }
     }
+
+    test("it handles single") {
+        val l = Lexer.make("2")
+        val expectedOut: AbstractCronFragmentList = ListBuffer(Single("2", 2)) 
+        l.lex() match {
+            case Left(e) => fail(s"Received unexpected error $e")
+            case Right(value) => {
+                assertEquals(expectedOut, value)
+            }
+        }
+    }
+
+    test("it handles multiple digits") {
+        val l = Lexer.make("2101")
+        val expectedOut: AbstractCronFragmentList = ListBuffer(Single("2101", 2101)) 
+        l.lex() match {
+            case Left(e) => fail(s"Received unexpected error ${e.toString()}")
+            case Right(value) => {
+                assertEquals(expectedOut, value)
+            }
+        }
+    }
+
+    test("it handles range") {
+        val l = Lexer.make("1-5")
+        val expectedOut: AbstractCronFragmentList = ListBuffer(Range("1-5", bottom = 1, top = 5)) 
+        l.lex() match {
+            case Left(e) => fail(s"Received unexpected error $e")
+            case Right(value) => {
+                assertEquals(expectedOut, value)
+            }
+        }
+    }
+
+    test("it handles basic list") {
+        val l = Lexer.make("1,5")
+        val expectedOut: AbstractCronFragmentList = ListBuffer(CronList("1,5", List(1,5))) 
+        l.lex() match {
+            case Left(e) => fail(s"Received unexpected error $e")
+            case Right(value) => {
+                assertEquals(expectedOut, value)
+            }
+        }
+    }
+
+    test("it handles malformed list") {
+        val l = Lexer.make("1,a")
+        l.lex() match {
+            case Left(e) => {
+                assert(e.isInstanceOf[ExpectedNumber])
+                assertEquals("Expected number at 2. Near 1,a", e.toString())
+            }
+            case Right(value) => fail("Expected to fail with error")
+        }
+    }
+
+    test("it handles malformed range") {
+        val l = Lexer.make("1-a")
+        l.lex() match {
+            case Left(e) => {
+                assert(e.isInstanceOf[ExpectedNumber])
+                assertEquals("Expected number at 2. Near 1-a", e.toString())
+            }
+            case Right(value) => fail("Expected to fail with error")
+        }
+    }
+
+    test("it handles skips extra whitespace") {
+        val l = Lexer.make("2     13")
+        val expectedOut: AbstractCronFragmentList = ListBuffer(Single("2", 2), Single("13", 13)) 
+        l.lex() match {
+            case Left(e) => fail(s"Received unexpected error $e")
+            case Right(value) => {
+                assertEquals(expectedOut, value)
+            }
+        }
+    }
+
+    test("it lexes a full cron example input") {
+        val l = Lexer.make("*/15 8-17 10 1,6 *")
+        val expectedOut: AbstractCronFragmentList = ListBuffer(
+            Divisor("*/15", 15),
+            Range("8-17", 8, 17),
+            Single("10", 10),
+            CronList("1,6", List(1, 6)),
+            Wildcard("*")
+        )
+
+        l.lex() match {
+            case Left(value) => fail(s"Expected to succeed. Got error ${value.toString()}")
+            case Right(value) => {
+                assertEquals(expectedOut, value)
+            }
+        }
+    }
 }
