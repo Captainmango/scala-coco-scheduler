@@ -1,8 +1,25 @@
-## sbt project compiled with Scala 3
+# scala-coco-scheduler
 
-### Usage
+A small Scala 3 command-line tool that parses cron expressions and prints the possible values for each field.
 
-This is a normal sbt project. You can compile code with `sbt compile`, run it with `sbt run`, and `sbt console` will start a Scala 3 REPL.
+## Run
 
-For more information on the sbt-dotty plugin, see the
-[scala3-example-project](https://github.com/scala/scala3-example-project/blob/main/README.md).
+```bash
+sbt "run --cron '*/15 0 1,15 * 1-5'"
+```
+
+## Test
+
+```bash
+sbt test
+```
+
+## Supported cron syntax
+
+- `*` — wildcard
+- `*/n` — step values
+- `a-b` — ranges
+- `a,b` — lists
+- single numbers
+
+Fields are expected in the order: minute, hour, day of month, month, weekday.
