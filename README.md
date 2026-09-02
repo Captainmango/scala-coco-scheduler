@@ -14,6 +14,18 @@ sbt "run --cron '*/15 0 1,15 * 1-5'"
 sbt test
 ```
 
+## Format
+
+```bash
+sbt scalafmtAll
+```
+
+## Fix
+
+```bash
+sbt scalafixAll
+```
+
 ## Supported cron syntax
 
 - `*` — wildcard
