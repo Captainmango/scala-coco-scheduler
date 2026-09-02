@@ -12,6 +12,7 @@ lazy val root = project
       "-Wunused:imports"
     ),
     libraryDependencies ++= Seq(
-      "org.scalameta" %% "munit" % "1.3.4" % Test
+      "org.scalameta" %% "munit" % "1.3.4" % Test,
+      "com.lihaoyi" %% "mainargs" % "0.7.7",
     )
   )
