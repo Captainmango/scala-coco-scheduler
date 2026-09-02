@@ -8,6 +8,10 @@ lazy val root = project
     name := "scala-coco-scheduler",
     version := "0.1.0-SNAPSHOT",
     scalaVersion := scala3Version,
+    scalafmtOnCompile := true,
+    Test / scalafmtOnCompile := true,
+    Compile / scalafixOnCompile := true,
+    Test / scalafixOnCompile := true,
     scalacOptions ++= Seq(
       "-Wunused:imports"
     ),
