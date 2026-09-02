@@ -90,7 +90,7 @@ class Lexer(
         currToken = getReadToken()
         if (!currToken.isDigit) then return Left(ExpectedNumber(readRawInput(), readPos))
         val topOfRange = readNumber()
-        val cf = Range(readRawInput(), bottom = num, top = topOfRange)
+        val cf = CronRange(readRawInput(), bottom = num, top = topOfRange)
         incrementReadPos()
         Right(cf)
       }
@@ -121,7 +121,7 @@ class Lexer(
   private def incrementReadPos(by: Int = 1) =
     readPos += by
 
-  private def syncCurrAndReadPos() = 
+  private def syncCurrAndReadPos() =
     if (readPos > currPos) {
       currPos = readPos
     } else {

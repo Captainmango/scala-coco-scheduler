@@ -11,18 +11,22 @@ enum CronInterval(val lowerBound: Int, val upperBound: Int) {
 }
 
 sealed trait AbstractCronFragment {
-    def raw: String
+  def raw: String
 }
 case class Single(val raw: String, val value: Int) extends AbstractCronFragment
-case class Range(val raw: String, val bottom: Int, val top: Int) extends AbstractCronFragment
+case class CronRange(val raw: String, val bottom: Int, val top: Int) extends AbstractCronFragment
 case class CronList(val raw: String, val items: List[Int]) extends AbstractCronFragment
 case class Divisor(val raw: String, val operand: Int) extends AbstractCronFragment
 case class Wildcard(val raw: String) extends AbstractCronFragment
 
 type AbstractCronFragmentList = ListBuffer[AbstractCronFragment]
 
+extension (acl: AbstractCronFragmentList) {
+  def toRaw(): String = acl.map(acf => acf.raw).mkString(" ")
+}
+
 case class CronFragment(val interval: CronInterval, val abstractFragment: AbstractCronFragment) {
-    override def toString(): String = abstractFragment.raw
+  override def toString(): String = abstractFragment.raw
 }
 
 case class Cron(
@@ -34,17 +38,17 @@ case class Cron(
 )
 
 object Cron {
-    def fromCronFragments(l: ListBuffer[CronFragment]): Cron =
-        Cron(l(0), l(1), l(2), l(3), l(4))
+  def fromCronFragments(l: ListBuffer[CronFragment]): Cron =
+    Cron(l(0), l(1), l(2), l(3), l(4))
 }
 
 object RawCron {
-    def unapply(c: Cron): (String, String, String, String, String) =
-        (
-            c.minute.abstractFragment.raw,
-            c.hour.abstractFragment.raw,
-            c.day_of_month.abstractFragment.raw,
-            c.month.abstractFragment.raw,
-            c.weekday.abstractFragment.raw,
-        )
+  def unapply(c: Cron): (String, String, String, String, String) =
+    (
+      c.minute.abstractFragment.raw,
+      c.hour.abstractFragment.raw,
+      c.day_of_month.abstractFragment.raw,
+      c.month.abstractFragment.raw,
+      c.weekday.abstractFragment.raw
+    )
 }

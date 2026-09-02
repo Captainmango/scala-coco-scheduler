@@ -1,20 +1,25 @@
-import domain.parser.Parser
-import domain.parser.Lexer
 import domain.formatter.CronFormatter
-import mainargs.{main, arg, Parser as ArgsParse}
+import domain.parser.{CronParser, Lexer}
+import mainargs.{Parser => ArgsParse, arg, main}
 
 object Main {
   @main
   def run(
-    @arg("cron", doc = "The cron to parse")
-    c: String
+      @arg("cron", doc = "The cron to parse")
+      c: String
   ): Unit =
-    val parser = new Parser(Lexer.make(""))
+    val lexer = Lexer.make(c)
+    val parser = new CronParser
+
     val result = for {
-      c <- parser.parse(c)
+      acl <- lexer.lex()
+      c <- parser.parse(acl)
     } yield c
 
-    println(CronFormatter.presentPossibleValues(result.right.get))
-  
+    result match {
+      case Right(value) => println(CronFormatter.presentPossibleValues(value))
+      case Left(value)  => println(value.toString())
+    }
+
   def main(args: Array[String]): Unit = ArgsParse(this).runOrExit(args)
 }

@@ -93,7 +93,7 @@ class LexerTest extends munit.FunSuite {
 
   test("it handles range") {
     val l = Lexer.make("1-5")
-    val expectedOut: AbstractCronFragmentList = ListBuffer(Range("1-5", bottom = 1, top = 5))
+    val expectedOut: AbstractCronFragmentList = ListBuffer(CronRange("1-5", bottom = 1, top = 5))
     l.lex() match {
       case Left(e) => fail(s"Received unexpected error $e")
       case Right(value) => {
@@ -150,7 +150,7 @@ class LexerTest extends munit.FunSuite {
     val l = Lexer.make("*/15 8-17 10 1,6 *")
     val expectedOut: AbstractCronFragmentList = ListBuffer(
       Divisor("*/15", 15),
-      Range("8-17", 8, 17),
+      CronRange("8-17", 8, 17),
       Single("10", 10),
       CronList("1,6", List(1, 6)),
       Wildcard("*")
