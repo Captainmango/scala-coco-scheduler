@@ -14,6 +14,11 @@ given MyMonad: Monadish[CronEither] with {
     fa.flatMap(f)
 }
 
+extension [F[_], A](fa: F[A])(using M: Monadish[F]) {
+  def map[B](f: A => B): F[B] = M.map(fa)(f)
+  def flatMap[B](f: A => F[B]): F[B] = M.flatMap(fa)(f)
+}
+
 trait CronParserAlg[F[_]] {
   def parse(input: String): F[Cron]
 }

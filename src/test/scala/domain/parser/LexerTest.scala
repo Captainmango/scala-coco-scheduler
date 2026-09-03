@@ -39,7 +39,7 @@ class LexerTest extends munit.FunSuite {
     l.lex() match {
       case Left(value) => {
         assert(value.isInstanceOf[InvalidInput])
-        assertEquals("Invalid input at 1. Near *a", value.toString())
+        assertEquals("Invalid input at position 1. Near *a", value.toString())
       }
       case Right(value) => fail("Should have failed with error")
     }
@@ -51,7 +51,7 @@ class LexerTest extends munit.FunSuite {
     l.lex() match {
       case Left(value) => {
         assert(value.isInstanceOf[ExpectedNumber])
-        assertEquals("Expected number at 2. Near */d", value.toString())
+        assertEquals("Expected number at position 2. Near */d", value.toString())
       }
       case Right(value) => fail("Should have failed with error")
     }
@@ -63,7 +63,7 @@ class LexerTest extends munit.FunSuite {
     l.lex() match {
       case Left(value) => {
         assert(value.isInstanceOf[InvalidInput])
-        assertEquals("Invalid input at 0. Near d", value.toString())
+        assertEquals("Invalid input at position 0. Near d", value.toString())
       }
       case Right(value) => fail("Should have failed with error")
     }
@@ -118,7 +118,7 @@ class LexerTest extends munit.FunSuite {
     l.lex() match {
       case Left(e) => {
         assert(e.isInstanceOf[ExpectedNumber])
-        assertEquals("Expected number at 2. Near 1,a", e.toString())
+        assertEquals("Expected number at position 2. Near 1,a", e.toString())
       }
       case Right(value) => fail("Expected to fail with error")
     }
@@ -129,7 +129,7 @@ class LexerTest extends munit.FunSuite {
     l.lex() match {
       case Left(e) => {
         assert(e.isInstanceOf[ExpectedNumber])
-        assertEquals("Expected number at 2. Near 1-a", e.toString())
+        assertEquals("Expected number at position 2. Near 1-a", e.toString())
       }
       case Right(value) => fail("Expected to fail with error")
     }

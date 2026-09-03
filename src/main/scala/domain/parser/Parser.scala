@@ -3,12 +3,9 @@ package domain.parser
 given CronParser: CronParserAlg[CronEither] with {
   override def parse(input: String): CronEither[Cron] = {
     val lexer = Lexer.make(input)
-    val acl = lexer.lex() match {
-      case Right(v)        => v // Success means continue
-      case l @ Left(value) => return l.asInstanceOf[CronEither[Cron]]
+    lexer.lex() match {
+      case Right(value) => new CronValidator().validate(value)
+      case Left(value)  => Left(value)
     }
-
-    val validator = new CronValidator
-    validator.validate(acl)
   }
 }
