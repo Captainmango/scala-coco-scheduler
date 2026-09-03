@@ -1,11 +1,11 @@
 package domain.parser
 
-given CronParser: CronParserAlg[CronEither] with {
-  override def parse(input: String): CronEither[Cron] = {
-    val lexer = Lexer.make(input)
-    lexer.lex() match {
-      case Right(value) => new CronValidator().validate(value)
-      case Left(value)  => Left(value)
-    }
-  }
-}
+def parseCron[F[_]: Monadish](
+    input: String
+)(using
+    lexer: CronLexerAlg[F],
+    validator: CronValidatorAlg[F]
+): F[Cron] = for {
+  tok <- lexer.lex(input)
+  c <- validator.validate(tok)
+} yield c

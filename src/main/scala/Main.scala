@@ -8,7 +8,7 @@ object Main {
       @arg("cron", doc = "The cron to parse")
       c: String
   ): Unit = {
-    val res = program(c)
+    val res = parseCron(c)
     res match {
       case Right(value) => println(CronFormatter.presentPossibleValues(value))
       case Left(value)  => println(value.toString())

@@ -4,7 +4,7 @@ import utils.AbstractCronListFactory
 
 import scala.collection.mutable.ListBuffer
 
-class ParserTest extends munit.FunSuite {
+class ValidatorTest extends munit.FunSuite {
   test("it can parse an AbstractCronFragmentList") {
     val validator = new CronValidator
     val acl = AbstractCronListFactory.basic()
