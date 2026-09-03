@@ -6,7 +6,7 @@ import scala.collection.mutable.ListBuffer
 
 class ParserTest extends munit.FunSuite {
   test("it can parse an AbstractCronFragmentList") {
-    val parser = new CronParser
+    val validator = new CronValidator
     val acl = AbstractCronListFactory.basic()
 
     val expectedCron = Cron(
@@ -17,7 +17,7 @@ class ParserTest extends munit.FunSuite {
       weekday = CronFragment(CronInterval.WEEKDAY, Wildcard("*"))
     )
 
-    parser.parse(acl) match {
+    validator.validate(acl) match {
       case Right(value) => {
         assertEquals(expectedCron, value)
       }
@@ -26,10 +26,10 @@ class ParserTest extends munit.FunSuite {
   }
 
   test("it errors when AbstractCronFragmentList length is too small") {
-    val parser = new CronParser
+    val validator = new CronValidator
     val acl = AbstractCronListFactory.empty() ++ ListBuffer(Wildcard("*"))
 
-    parser.parse(acl) match {
+    validator.validate(acl) match {
       case Right(value) => fail("Should have failed with an error")
       case Left(value) => {
         assert(value.isInstanceOf[CronInvalid])
@@ -39,10 +39,10 @@ class ParserTest extends munit.FunSuite {
   }
 
   test("it errors when AbstractCronFragmentList length is too big") {
-    val parser = new CronParser
+    val validator = new CronValidator
     val acl = AbstractCronListFactory.basic() ++ ListBuffer(Wildcard("*"))
 
-    parser.parse(acl) match {
+    validator.validate(acl) match {
       case Right(value) => fail("Should have failed with an error")
       case Left(value) => {
         assert(value.isInstanceOf[CronInvalid])
@@ -52,7 +52,7 @@ class ParserTest extends munit.FunSuite {
   }
 
   test("it checks bounds are semantically correct") {
-    val parser = new CronParser
+    val validator = new CronValidator
     val acl = AbstractCronListFactory.empty() ++ ListBuffer(
       Single("99", 99),
       Wildcard("*"),
@@ -61,7 +61,7 @@ class ParserTest extends munit.FunSuite {
       Wildcard("*")
     )
 
-    parser.parse(acl) match {
+    validator.validate(acl) match {
       case Right(value) => fail("Should have failed with an error")
       case Left(value) => {
         assert(value.isInstanceOf[OutOfIntervalBounds])

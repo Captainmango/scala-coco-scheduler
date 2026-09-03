@@ -1,5 +1,5 @@
 import domain.formatter.CronFormatter
-import domain.parser.{CronParser, Lexer}
+import domain.parser.{_, given}
 import mainargs.{Parser => ArgsParse, arg, main}
 
 object Main {
@@ -8,15 +8,8 @@ object Main {
       @arg("cron", doc = "The cron to parse")
       c: String
   ): Unit = {
-    val lexer = Lexer.make(c)
-    val parser = new CronParser
-
-    val result = for {
-      acl <- lexer.lex()
-      c <- parser.parse(acl)
-    } yield c
-
-    result match {
+    val parser = summon[CronParserAlg[CronEither]]
+    parser.parse(c) match {
       case Right(value) => println(CronFormatter.presentPossibleValues(value))
       case Left(value)  => println(value.toString())
     }

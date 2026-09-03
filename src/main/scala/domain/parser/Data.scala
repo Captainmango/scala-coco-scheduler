@@ -10,6 +10,9 @@ enum CronInterval(val lowerBound: Int, val upperBound: Int) {
   case WEEKDAY extends CronInterval(1, 7)
 }
 
+/** Tagless initial block. Works, but meant that testing was coupled to how the program actually runs. Not directly an
+  * issue, but means testing is a bit whack.
+  */
 sealed trait AbstractCronFragment {
   def raw: String
 }
