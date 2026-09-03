@@ -1,9 +1,6 @@
 package utils
 
-import domain.parser.{Cron, CronEither, Monadish}
-import domain.parser.AbstractCronFragment
-import domain.parser.CronLexerAlg
-import domain.parser.CronValidatorAlg
+import domain.parser.{AbstractCronFragment, Cron, CronEither, CronLexerAlg, CronValidatorAlg, Monadish}
 
 enum Traces {
   case Lexed(input: String)

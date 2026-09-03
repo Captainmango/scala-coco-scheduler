@@ -2,63 +2,16 @@
 
 Focus is on overall construction and idiomatic Scala, not formatting.
 
+## Progress
+
 ## What you're doing well
 
 * **Clear separation of concerns.** You split the problem into Lexer → Validator → Evaluator → Formatter. That pipeline is easy to follow and test.
 * **Good use of Scala 3 ADTs.** `CronInterval` as an `enum` with bounds, a `sealed trait` for fragments, and case classes for the variants are solid modelling choices.
-* **Tests exist for each phase.** Having unit tests for the lexer, validator and evaluator means you can refactor each stage independently with confidence.
+* **Tests exist for each phase.** Having unit tests for the lexer, validator, evaluator and parser program means you can refactor each stage independently with confidence.
 * **Build tooling is sensible.** Scala 3.3.8, munit, mainargs, plus scalafmt/scalafix on compile is a good setup for learning.
 * **Pattern matching is appropriate.** You reach for `match` rather than `isInstanceOf` chains in most places.
-
-## Where the tagless-final design isn't paying off yet
-
-The scaffold is there (`CronParserAlg`, `CronEither`, `Monadish`), but it isn't actually being used in an idiomatic tagless-final way.
-
-### `Monadish` is defined but never used
-
-`Monadish[F[_]]` has a `given MyMonad: Monadish[CronEither]`, but nothing in the program asks for a `Monadish` instance. In tagless-final, the business logic is usually written abstractly:
-
-```scala
-def program[F[_]: Monad](parser: CronParserAlg[F]): F[Cron] =
-  parser.parse("*/15 0 1,15 * 1-5")
-```
-
-Right now your `parse` implementation is concrete `Either` code with early `return`s, so the type class is dead weight.
-
-### The algebra instance hardcodes `Either`
-
-```scala
-given CronParser: CronParserAlg[CronEither] with {
-  override def parse(input: String): CronEither[Cron] = {
-    val lexer = Lexer.make(input)
-    val acl = lexer.lex() match {
-      case Right(v)        => v
-      case l @ Left(value) => return l.asInstanceOf[CronEither[Cron]]
-    }
-    ...
-  }
-}
-```
-
-This only gives you one interpreter: `Either[ParserError, *]`. The value of tagless-final is being able to plug in other interpretations (e.g. a test interpreter, a traced interpreter, an effectful one). If you only ever need `Either`, a plain object or function is simpler and clearer.
-
-### Decide: commit to tagless-final, or simplify
-
-If you want to keep the tagless-final shape, consider:
-
-1. Writing the parser program against the algebra, not its implementation.
-2. Using `cats.MonadError` or a similar abstraction instead of a hand-rolled `Monadish` (or at least deriving `flatMap`/`map` syntax from it).
-3. Providing at least two interpreters so the abstraction earns its keep — e.g. `Either` for production and a `State`-based or logging interpreter for tests.
-
-If this project is primarily about learning cron parsing, it is completely fine to drop the tagless-final layer and just expose:
-
-```scala
-object CronParser {
-  def parse(input: String): Either[ParserError, Cron] = ...
-}
-```
-
-You can always reintroduce the abstraction later when you have a real need for it.
+* **Tagless-final is now connected.** The program is abstract over `F[_]`, and the test interpreter demonstrates the value of the abstraction.
 
 ## Imperative patterns that fight Scala
 
@@ -66,7 +19,7 @@ You said imperative code fits your brain better, which is fair, but several of t
 
 ### Early `return`
 
-There are early `return`s in `Lexer.lex`, `Lexer.handleDigit`, `Parser.parse`, and `Validator.validate`. In Scala, `return` is not a neutral control-flow tool: it desugars to throwing `NonLocalReturnControl`, which can behave unexpectedly with lambdas and higher-order functions. Idiomatic Scala expresses early exit through the data type, e.g.:
+There are early `return`s in `Lexer.lex`, `Lexer.handleDigit`, and `Validator.validate`. In Scala, `return` is not a neutral control-flow tool: it desugars to throwing `NonLocalReturnControl`, which can behave unexpectedly with lambdas and higher-order functions. Idiomatic Scala expresses early exit through the data type, e.g.:
 
 ```scala
 for {
@@ -175,7 +128,7 @@ case class InvalidInput(raw: String, position: Int) extends ParserError {
 }
 ```
 
-This also makes your tests less brittle: right now several lexer tests fail because they assert on `toString` output that no longer matches the implementation (`at 1` vs `at position 1`).
+This also makes your tests less brittle: several lexer and validator tests currently assert on `toString` output.
 
 ### `EOC = 'E'` is a risky sentinel
 
@@ -219,13 +172,12 @@ or pattern-match on `Right`.
 
 ## Suggested next steps
 
-1. **Fix the failing tests** by aligning expected strings with actual `toString` output, or (better) stop asserting on `toString`.
-2. **Pick one design direction:**
-   * *Simple:* make `CronParser.parse(input: String): Either[ParserError, Cron]` a pure function and drop the unused algebra/Monadish scaffolding.
-   * *Tagless-final:* write the parser program abstractly, use the `Monadish` constraint, and provide at least two interpreters.
-3. **Replace mutable lexer state** with a recursive function or parser combinators.
-4. **Replace `ListBuffer` in the domain API** with `List`.
-5. **Replace `boundary`/`break` and early `return`s** with `flatMap`/`traverse`.
-6. **Add support for lists with more than two elements**.
+1. **Replace mutable lexer state** with a recursive function or parser combinators.
+2. **Replace `ListBuffer` in the domain API** with `List`.
+3. **Replace `boundary`/`break` and early `return`s** with `flatMap`/`traverse`.
+4. **Construct `Cron` safely** from exactly five validated fragments instead of indexing.
+5. **Add support for lists with more than two elements**.
+6. **Tidy smaller points:** remove redundant `val`s on case classes, add a `message` method to `ParserError`, replace the `EOC` sentinel with `Option[Char]`, and make `readNumber` return `Either`.
+7. **Fix brittle assertions** in tests that rely on `toString` or `getOrElse(())`.
 
-Overall, the domain model and test coverage are a strong base. The main thing holding the code back is that the functional/algebraic scaffolding is present but not connected to the imperative implementation underneath. Closing that gap — either by committing to the abstraction or removing it — will make the codebase feel much more idiomatic.
+Overall, the domain model, test coverage and now the tagless-final structure are a strong base. The main thing holding the code back is that the imperative implementation underneath the algebra still uses mutable state, early exits and partial operations. Closing that gap will make the codebase feel much more idiomatic.

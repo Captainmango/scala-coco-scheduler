@@ -1,7 +1,7 @@
 package domain.parser
 
-import utils.{TestResult, testLexer, testValidator, given}
-import utils.Traces
+import utils.given
+import utils.{TestResult, Traces, testLexer, testValidator}
 
 class ParserTest extends munit.FunSuite {
   test("it runs the program successfully") {
