@@ -1,7 +1,6 @@
 package domain.parser
 
-import domain.parser.v1.*
-
+import domain.parser.v1._
 
 given CronLexer: CronLexerAlg[CronEither] with {
   override def lex(input: String): CronEither[List[AbstractCronFragment]] =

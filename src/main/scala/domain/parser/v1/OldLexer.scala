@@ -1,11 +1,10 @@
 package domain.parser.v1
 
-import domain.parser.*
-import scala.collection.mutable.ListBuffer
-import scala.util.{Try, Success, Failure}
-import scala.util.boundary
-import scala.util.boundary.break
+import domain.parser._
 
+import scala.collection.mutable.ListBuffer
+import scala.util.boundary.break
+import scala.util.{Failure, Success, Try, boundary}
 
 val EOC = 'E'
 

@@ -1,8 +1,7 @@
 package domain.parser.v1
 
+import domain.parser._
 import utils.AbstractCronListFactory
-
-import domain.parser.*
 
 import scala.collection.mutable.ListBuffer
 

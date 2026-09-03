@@ -1,10 +1,10 @@
 package domain.parser.v1
 
-import domain.parser.*
+import domain.parser._
+
 import scala.collection.mutable.ListBuffer
 import scala.util.boundary
 import scala.util.boundary.break
-
 
 class CronValidator {
   private val cronIntervalOrder = List(
