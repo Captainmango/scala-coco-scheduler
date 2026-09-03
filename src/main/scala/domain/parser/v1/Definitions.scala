@@ -1,4 +1,6 @@
-package domain.parser
+package domain.parser.v1
+import domain.parser.v1.{AbstractCronFragment, Cron}
+import domain.parser.v1.ParserError
 
 type CronEither = [A] =>> Either[ParserError, A]
 
@@ -17,10 +19,6 @@ given MyMonad: Monadish[CronEither] with {
 extension [F[_], A](fa: F[A])(using M: Monadish[F]) {
   def map[B](f: A => B): F[B] = M.map(fa)(f)
   def flatMap[B](f: A => F[B]): F[B] = M.flatMap(fa)(f)
-}
-
-trait CronParserAlg[F[_]] {
-  def parse(input: String): F[Cron]
 }
 
 trait CronLexerAlg[F[_]] {

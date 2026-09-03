@@ -1,4 +1,6 @@
-package domain.parser
+package domain.parser.v1
+
+import domain.parser.v1.{Cron, CronFragment, CronInterval, CronList, CronRange, Divisor, Single, Wildcard}
 
 object CronEvaluator {
   def evaluate(c: Cron): String = {

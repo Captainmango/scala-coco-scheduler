@@ -1,4 +1,4 @@
-package domain.parser
+package domain.parser.v1
 
 sealed trait ParserError { def message: String }
 case class InvalidInput(raw: String, position: Int) extends ParserError {

@@ -1,6 +1,6 @@
 package domain.formatter
 
-import domain.parser.{Cron, CronEvaluator, RawCron}
+import domain.parser.v1.{Cron, CronEvaluator, RawCron}
 
 object CronFormatter {
   def presentRaw(c: Cron): String = {
