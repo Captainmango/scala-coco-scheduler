@@ -33,7 +33,7 @@ class ValidatorTest extends munit.FunSuite {
       case Right(value) => fail("Should have failed with an error")
       case Left(value) => {
         assert(value.isInstanceOf[CronInvalid])
-        assertEquals("Provided cron expression * is not a valid cron.", value.toString())
+        assertEquals("Provided cron expression * is not a valid cron.", value.message)
       }
     }
   }
@@ -46,7 +46,7 @@ class ValidatorTest extends munit.FunSuite {
       case Right(value) => fail("Should have failed with an error")
       case Left(value) => {
         assert(value.isInstanceOf[CronInvalid])
-        assertEquals("Provided cron expression * * * * * * is not a valid cron.", value.toString())
+        assertEquals("Provided cron expression * * * * * * is not a valid cron.", value.message)
       }
     }
   }
@@ -65,7 +65,7 @@ class ValidatorTest extends munit.FunSuite {
       case Right(value) => fail("Should have failed with an error")
       case Left(value) => {
         assert(value.isInstanceOf[OutOfIntervalBounds])
-        assertEquals("99 outside range of 0 to 59", value.toString())
+        assertEquals("99 outside range of 0 to 59", value.message)
       }
     }
   }

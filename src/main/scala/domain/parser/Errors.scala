@@ -13,3 +13,6 @@ case class CronInvalid(rawExpr: String) extends ParserError {
 case class OutOfIntervalBounds(ci: CronInterval, v: String) extends ParserError {
   def message: String = s"$v outside range of ${ci.lowerBound} to ${ci.upperBound}"
 }
+case class UnprocessableNumber(v: String) extends ParserError {
+  def message: String = s"$v is not a valid number"
+}

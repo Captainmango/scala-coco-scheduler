@@ -1,6 +1,7 @@
 package domain.parser
 
 import scala.collection.mutable.ListBuffer
+import scala.util.{Failure, Success, Try}
 
 val EOC = 'E'
 
@@ -28,7 +29,10 @@ class Lexer(
     var out = ListBuffer[AbstractCronFragment]()
 
     while (currPos < bounds) {
-      var token = getCurrToken()
+      var token = getCurrToken() match {
+        case Some(value) => value
+        case None        => EOC
+      }
 
       val frag = token match {
         case '*'            => handleAsterisk()
@@ -52,17 +56,23 @@ class Lexer(
 
   private def handleAsterisk(): Either[ParserError, AbstractCronFragment] = {
     incrementReadPos()
-    var nextToken = getReadToken()
+    var nextToken = getReadToken() match
+      case Some(value) => value
+      case None        => EOC
 
     nextToken match {
       case '/' => {
         incrementReadPos()
-        nextToken = getReadToken()
+        nextToken = getReadToken() match
+          case Some(value) => value
+          case None        => EOC
+
         val cf =
           if (!nextToken.isDigit) then Left(ExpectedNumber(readRawInput(), readPos))
           else {
-            val num = readNumber()
-            Right(Divisor(readRawInput(), num))
+            for {
+              num <- readNumber()
+            } yield Divisor(readRawInput(), num)
           }
         incrementReadPos()
         cf
@@ -77,43 +87,56 @@ class Lexer(
   }
 
   private def handleDigit(): Either[ParserError, AbstractCronFragment] = {
-    val num = readNumber()
-    var currToken = getReadToken()
-    currToken match {
-      case ' ' | EOC => {
-        val cf = Single(readRawInput(), num)
-        incrementReadPos()
-        Right(cf)
+    readNumber().flatMap({ num =>
+      var currToken = getReadToken() match
+        case Some(value) => value
+        case None        => EOC
+
+      currToken match {
+        case ' ' | EOC => {
+          val cf = Single(readRawInput(), num)
+          incrementReadPos()
+          Right(cf)
+        }
+        case '-' => {
+          incrementReadPos()
+          currToken = getReadToken() match
+            case Some(value) => value
+            case None        => EOC
+
+          if (!currToken.isDigit) then return Left(ExpectedNumber(readRawInput(), readPos))
+          val cf = for {
+            topOfRange <- readNumber()
+          } yield CronRange(readRawInput(), bottom = num, top = topOfRange)
+          incrementReadPos()
+          cf
+        }
+        case ',' => {
+          incrementReadPos()
+          currToken = getReadToken() match
+            case Some(value) => value
+            case None        => EOC
+
+          if (!currToken.isDigit) then return Left(ExpectedNumber(readRawInput(), readPos))
+          val cf = for {
+
+            numTwo <- readNumber()
+          } yield CronList(readRawInput(), List(num, numTwo))
+          incrementReadPos()
+          cf
+        }
+        case _: Char => Left(InvalidInput(readRawInput(), readPos))
       }
-      case '-' => {
-        incrementReadPos()
-        currToken = getReadToken()
-        if (!currToken.isDigit) then return Left(ExpectedNumber(readRawInput(), readPos))
-        val topOfRange = readNumber()
-        val cf = CronRange(readRawInput(), bottom = num, top = topOfRange)
-        incrementReadPos()
-        Right(cf)
-      }
-      case ',' => {
-        incrementReadPos()
-        currToken = getReadToken()
-        if (!currToken.isDigit) then return Left(ExpectedNumber(readRawInput(), readPos))
-        val numTwo = readNumber()
-        val cf = CronList(readRawInput(), List(num, numTwo))
-        incrementReadPos()
-        Right(cf)
-      }
-      case _: Char => Left(InvalidInput(readRawInput(), readPos))
-    }
+    })
   }
 
-  private def getCurrToken(): Char =
-    if currPos >= _input.length then EOC
-    else _input.charAt(currPos)
+  private def getCurrToken(): Option[Char] =
+    if currPos >= _input.length then None
+    else Some(_input.charAt(currPos))
 
-  private def getReadToken(): Char =
-    if readPos >= _input.length() then EOC
-    else _input.charAt(readPos)
+  private def getReadToken(): Option[Char] =
+    if readPos >= _input.length() then None
+    else Some(_input.charAt(readPos))
 
   private def incrementCurrPos(by: Int = 1) =
     currPos += by
@@ -130,19 +153,40 @@ class Lexer(
 
   private def readRawInput(): String = _input.slice(currPos, readPos + 1).trim()
 
-  private def readNumber(): Int = {
+  private val operators = Set('*', '/', '-', ',')
+
+  private def isOperator(c: Char): Boolean = operators.contains(c)
+
+  private def readNumber(): Either[ParserError, Int] = {
     val tempReadPos = readPos
-    while (getReadToken().isDigit) {
+    var tok = getReadToken() match
+      case Some(value) => value
+      case None        => EOC
+
+    while (!tok.isWhitespace && !isOperator(tok) && tok != EOC) {
       incrementReadPos()
+      tok = getReadToken() match
+        case Some(value) => value
+        case None        => EOC
     }
-    (_input.slice(tempReadPos, readPos)).toInt
+
+    Try((_input.slice(tempReadPos, readPos)).toInt) match {
+      case Success(value)     => Right(value)
+      case Failure(exception) => Left(UnprocessableNumber(_input.slice(tempReadPos, readPos)))
+    }
   }
 
   private def skipWhitespace(): Unit = {
-    var currToken = getCurrToken()
+    var currToken = getCurrToken() match
+      case Some(value) => value
+      case None        => EOC
+
     while (currToken.isWhitespace) {
       incrementCurrPos()
-      currToken = getCurrToken()
+      currToken = getCurrToken() match
+        case Some(value) => value
+        case None        => EOC
+
     }
   }
 }

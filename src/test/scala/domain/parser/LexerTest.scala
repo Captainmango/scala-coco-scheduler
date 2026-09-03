@@ -29,7 +29,7 @@ class LexerTest extends munit.FunSuite {
     val l = Lexer.make("* */15")
     val expectedOut = ListBuffer[AbstractCronFragment](Wildcard("*"), Divisor("*/15", 15))
 
-    val res = l.lex().getOrElse(())
+    val res = l.lex().right.get
     assertEquals(expectedOut, res)
   }
 
@@ -39,7 +39,7 @@ class LexerTest extends munit.FunSuite {
     l.lex() match {
       case Left(value) => {
         assert(value.isInstanceOf[InvalidInput])
-        assertEquals("Invalid input at position 1. Near *a", value.toString())
+        assertEquals("Invalid input at position 1. Near *a", value.message)
       }
       case Right(value) => fail("Should have failed with error")
     }
@@ -51,7 +51,7 @@ class LexerTest extends munit.FunSuite {
     l.lex() match {
       case Left(value) => {
         assert(value.isInstanceOf[ExpectedNumber])
-        assertEquals("Expected number at position 2. Near */d", value.toString())
+        assertEquals("Expected number at position 2. Near */d", value.message)
       }
       case Right(value) => fail("Should have failed with error")
     }
@@ -63,7 +63,7 @@ class LexerTest extends munit.FunSuite {
     l.lex() match {
       case Left(value) => {
         assert(value.isInstanceOf[InvalidInput])
-        assertEquals("Invalid input at position 0. Near d", value.toString())
+        assertEquals("Invalid input at position 0. Near d", value.message)
       }
       case Right(value) => fail("Should have failed with error")
     }
@@ -84,7 +84,7 @@ class LexerTest extends munit.FunSuite {
     val l = Lexer.make("2101")
     val expectedOut: AbstractCronFragmentList = ListBuffer(Single("2101", 2101))
     l.lex() match {
-      case Left(e) => fail(s"Received unexpected error ${e.toString()}")
+      case Left(e) => fail(s"Received unexpected error ${e.message}")
       case Right(value) => {
         assertEquals(expectedOut, value)
       }
@@ -95,7 +95,7 @@ class LexerTest extends munit.FunSuite {
     val l = Lexer.make("1-5")
     val expectedOut: AbstractCronFragmentList = ListBuffer(CronRange("1-5", bottom = 1, top = 5))
     l.lex() match {
-      case Left(e) => fail(s"Received unexpected error $e")
+      case Left(e) => fail(s"Received unexpected error ${e.message}")
       case Right(value) => {
         assertEquals(expectedOut, value)
       }
@@ -106,7 +106,7 @@ class LexerTest extends munit.FunSuite {
     val l = Lexer.make("1,5")
     val expectedOut: AbstractCronFragmentList = ListBuffer(CronList("1,5", List(1, 5)))
     l.lex() match {
-      case Left(e) => fail(s"Received unexpected error $e")
+      case Left(e) => fail(s"Received unexpected error ${e.message}")
       case Right(value) => {
         assertEquals(expectedOut, value)
       }
@@ -118,7 +118,7 @@ class LexerTest extends munit.FunSuite {
     l.lex() match {
       case Left(e) => {
         assert(e.isInstanceOf[ExpectedNumber])
-        assertEquals("Expected number at position 2. Near 1,a", e.toString())
+        assertEquals("Expected number at position 2. Near 1,a", e.message)
       }
       case Right(value) => fail("Expected to fail with error")
     }
@@ -129,7 +129,7 @@ class LexerTest extends munit.FunSuite {
     l.lex() match {
       case Left(e) => {
         assert(e.isInstanceOf[ExpectedNumber])
-        assertEquals("Expected number at position 2. Near 1-a", e.toString())
+        assertEquals("Expected number at position 2. Near 1-a", e.message)
       }
       case Right(value) => fail("Expected to fail with error")
     }
@@ -139,7 +139,7 @@ class LexerTest extends munit.FunSuite {
     val l = Lexer.make("2     13")
     val expectedOut: AbstractCronFragmentList = ListBuffer(Single("2", 2), Single("13", 13))
     l.lex() match {
-      case Left(e) => fail(s"Received unexpected error $e")
+      case Left(e) => fail(s"Received unexpected error ${e.message}")
       case Right(value) => {
         assertEquals(expectedOut, value)
       }
@@ -157,7 +157,7 @@ class LexerTest extends munit.FunSuite {
     )
 
     l.lex() match {
-      case Left(value) => fail(s"Expected to succeed. Got error ${value.toString()}")
+      case Left(value) => fail(s"Expected to succeed. Got error ${value.message}")
       case Right(value) => {
         assertEquals(expectedOut, value)
       }
