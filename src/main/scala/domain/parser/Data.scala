@@ -42,7 +42,11 @@ case class Cron(
 
 object Cron {
   def fromCronFragments(l: ListBuffer[CronFragment]): Cron =
-    Cron(l(0), l(1), l(2), l(3), l(4))
+    l match {
+      case ListBuffer(mi, h, dom, m, w) => 
+        Cron(mi, h, dom, m, w)
+      case _: ListBuffer[?] => throw new RuntimeException
+    }
 }
 
 object RawCron {

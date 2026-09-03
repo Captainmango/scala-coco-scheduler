@@ -1,4 +1,6 @@
-package domain.parser
+package domain.parser.v1
+
+import domain.parser.*
 
 import scala.collection.mutable.ListBuffer
 
