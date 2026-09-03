@@ -1,7 +1,6 @@
 import domain.formatter.CronFormatter
 import domain.parser.v1.given
-import domain.parser._
-
+import domain.parser.{_, given}
 import mainargs.{Parser => ArgsParse, arg, main}
 
 object Main {

@@ -1,6 +1,6 @@
 package domain.parser
 
-import domain.parser.CronRange
+import domain.parser.v1._
 
 class EvaluatorTest extends munit.FunSuite {
   test("it can parse a cron") {

@@ -1,5 +1,6 @@
 package domain.parser
 
+import domain.parser.v1._
 import utils.given
 import utils.{TestResult, Traces, testLexer, testValidator}
 

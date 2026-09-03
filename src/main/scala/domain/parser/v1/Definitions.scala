@@ -1,6 +1,5 @@
 package domain.parser.v1
-import domain.parser.v1.{AbstractCronFragment, Cron}
-import domain.parser.v1.ParserError
+import domain.parser.v1.{AbstractCronFragment, Cron, ParserError}
 
 type CronEither = [A] =>> Either[ParserError, A]
 

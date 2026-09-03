@@ -1,6 +1,6 @@
 package utils
 
-import domain.parser.{AbstractCronFragmentList, CronList, CronRange, Divisor, Single, Wildcard}
+import domain.parser.v1.{AbstractCronFragmentList, CronList, CronRange, Divisor, Single, Wildcard}
 
 import scala.collection.mutable.ListBuffer
 

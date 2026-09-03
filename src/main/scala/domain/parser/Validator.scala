@@ -1,10 +1,8 @@
 package domain.parser
 
-import domain.parser.v1._
+import domain.parser.v1.{AbstractCronFragment, Cron, CronEither, CronValidatorAlg, _}
 
 import scala.collection.mutable.ListBuffer
-import domain.parser.v1.{AbstractCronFragment, Cron}
-import domain.parser.v1.{CronEither, CronValidatorAlg}
 
 given CronValidatorIntp: CronValidatorAlg[CronEither] with {
   override def validate(input: List[AbstractCronFragment]): CronEither[Cron] =
