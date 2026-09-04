@@ -2,7 +2,7 @@ package domain.parser.v2
 
 class LexerTest extends munit.FunSuite {
   test("it handles a single asterisk") {
-    val res = CronLexer.lex(("*"))
+    val res = CronLexerV2.lex(("*"))
 
     res match {
       case Right(value) =>
@@ -12,7 +12,7 @@ class LexerTest extends munit.FunSuite {
   }
 
   test("it handles the full grammar") {
-    val res = CronLexer.lex(("*/,-99"))
+    val res = CronLexerV2.lex(("*/,-99"))
 
     res match {
       case Right(value) =>
@@ -22,7 +22,7 @@ class LexerTest extends munit.FunSuite {
   }
 
   test("it errors on non-grammar things") {
-    val res = CronLexer.lex("a")
+    val res = CronLexerV2.lex("a")
 
     res match
       case Left(value) =>
@@ -32,7 +32,7 @@ class LexerTest extends munit.FunSuite {
   }
 
   test("it errors on bad number") {
-    val res = CronLexer.lex("62a")
+    val res = CronLexerV2.lex("62a")
 
     res match
       case Left(value) =>

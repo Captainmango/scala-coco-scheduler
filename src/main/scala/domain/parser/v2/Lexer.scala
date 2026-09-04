@@ -2,7 +2,7 @@ package domain.parser.v2
 
 import scala.annotation.tailrec
 
-object CronLexer {
+object CronLexerV2 {
   def lex(input: String): CronEither[List[CronLexem]] =
     val segments = input.split("\\s+").filter(_.nonEmpty).toList
 
