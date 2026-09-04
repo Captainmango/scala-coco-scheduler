@@ -14,39 +14,32 @@ object CronParserV2 {
     lexList match {
       case List(Asterisk) => Right(Wildcard())
       case List(Asterisk, Slash, Number(operand)) => {
-        operand.toIntOption match {
-          case Some(value) => Right(Divisor(value))
-          case None        => Left(UnprocessableNumber(operand))
-        }
+        for {
+          v <- parseNumber(operand)
+        } yield Divisor(v)
       }
       case List(Number(n1), Comma, Number(n2)) => {
-        n1.toIntOption match
-          case Some(v1) =>
-            n2.toIntOption match {
-              case Some(v2) => Right(CList(List(v1, v2).sorted))
-              case None     => Left(UnprocessableNumber(n2))
-            }
-          case None => Left(UnprocessableNumber(n1))
+        for {
+          v1 <- parseNumber(n1)
+          v2 <- parseNumber(n2)
+        } yield CList(List(v1, v2).sorted)
       }
       case List(Number(n1), Dash, Number(n2)) => {
-        n1.toIntOption match
-          case Some(v1) =>
-            n2.toIntOption match {
-              case Some(v2) => Right(CRange(bottom = Math.min(v1, v2), top = Math.max(v1, v2)))
-              case None     => Left(UnprocessableNumber(n2))
-            }
-          case None => Left(UnprocessableNumber(n1))
+        for {
+          v1 <- parseNumber(n1)
+          v2 <- parseNumber(n2)
+        } yield CRange(bottom = Math.min(v1, v2), top = Math.max(v1, v2))
       }
       case List(Number(n)) => {
-        n.toIntOption match {
-          case Some(value) => Right(Single(value))
-          case None        => Left(UnprocessableNumber(n))
-        }
+        for {
+          v <- parseNumber(n)
+        } yield Single(v)
       }
       case _ =>
-        Left(ExpressionInvalid(lexList.foldLeft("") { (acc, l) =>
-          acc ++ l.raw
-        }))
+        Left(ExpressionInvalid(lexList.foldLeft("") { (acc, l) => acc ++ l.raw }))
     }
   }
+
+  private def parseNumber(n: String): CronEither[Int] =
+    n.toIntOption.toRight(UnprocessableNumber(n))
 }
