@@ -1,5 +1,5 @@
-import domain.formatter.CronFormatter
-import domain.parser.v1.given
+import domain.formatter.CronFormatterV2
+import domain.parser.v2.given
 import domain.parser.{_, given}
 import mainargs.{Parser => ArgsParse, arg, main}
 
@@ -11,8 +11,8 @@ object Main {
   ): Unit = {
     val res = parseCron(c)
     res match {
-      case Right(value) => println(CronFormatter.presentPossibleValues(value))
-      case Left(value)  => println(value.toString())
+      case Right(value) => println(CronFormatterV2.presentPossibleValues(value))
+      case Left(value)  => println(value.message)
     }
   }
 

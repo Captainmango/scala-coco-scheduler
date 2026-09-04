@@ -12,11 +12,10 @@ object CronLexerV2 {
         lexems <- processSegment(seg)
       } yield acc ++ lexems.reverse
     } match {
-        case Right(value) => Right(List(value))
-        case Left(value) => Left(value)
+      case Right(value) => Right(List(value))
+      case Left(value)  => Left(value)
     }
   }
-    
 
   private def processSegment(input: String): CronEither[List[CronLexem]] = {
     @tailrec
@@ -32,7 +31,7 @@ object CronLexerV2 {
             val (digitsString, nextIdx) = readNumber(input, idx)
             loop(nextIdx, Number(digitsString) :: acc)
           }
-          case _: Char => Left(InvalidInput(input, idx))
+          case _: Char => Left(InvalidInput())
         }
       }
     }
