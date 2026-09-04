@@ -27,7 +27,7 @@ class LexerTest extends munit.FunSuite {
     res match
       case Left(value) =>
         assert(value.isInstanceOf[InvalidInput])
-        assertEquals("Invalid input at position 0. Near a", value.message)
+        assertEquals("Given cron expression is invalid", value.message)
       case Right(value) => fail("Should not have succeeded")
   }
 
@@ -37,7 +37,7 @@ class LexerTest extends munit.FunSuite {
     res match
       case Left(value) =>
         assert(value.isInstanceOf[InvalidInput])
-        assertEquals("Invalid input at position 2. Near 62a", value.message)
+        assertEquals("Given cron expression is invalid", value.message)
       case Right(value) => fail("Should not have succeeded")
   }
 }

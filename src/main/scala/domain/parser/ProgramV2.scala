@@ -1,7 +1,7 @@
 package domain.parser
 import domain.parser.v2._
 
-def parseCron[F[_]: Monadish](
+def parseCronV2[F[_]: Monadish](
     input: String
 )(using
     lexer: CronLexerAlg[F],

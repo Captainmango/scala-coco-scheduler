@@ -2,7 +2,7 @@ package domain.parser.v2
 
 sealed trait ParserError { def message: String }
 case class InvalidInput() extends ParserError {
-  def message: String = "Given cron epxression is invalid"
+  def message: String = "Given cron expression is invalid"
 }
 case class ExpectedNumber(raw: String, position: Int) extends ParserError {
   def message: String = s"Expected number at position $position. Near $raw"

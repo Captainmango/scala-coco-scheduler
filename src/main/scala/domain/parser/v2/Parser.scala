@@ -7,9 +7,6 @@ object CronParserV2 {
         acc <- accEither
         op <- processLexemList(lexList = lexemList)
       } yield acc ++ List(op)
-    } match {
-      case Left(value)  => Left(value)
-      case Right(value) => Right(value.reverse)
     }
   }
 

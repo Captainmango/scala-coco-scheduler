@@ -1,14 +1,7 @@
 package domain.formatter
 
 import domain.parser.v1.{Cron, CronEvaluator, RawCron}
-import domain.parser.v2.{Cron => Cronv2}
-import domain.parser.v2.CronInterval
-import domain.parser.v2.CronFragment
-import domain.parser.v2.Wildcard
-import domain.parser.v2.CList
-import domain.parser.v2.CRange
-import domain.parser.v2.Divisor
-import domain.parser.v2.Single
+import domain.parser.v2.{CList, CRange, Cron => Cronv2, CronFragment, CronInterval, Divisor, Single, Wildcard}
 
 object CronFormatterV1 {
   def presentRaw(c: Cron): String = {
