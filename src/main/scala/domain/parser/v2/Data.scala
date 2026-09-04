@@ -8,26 +8,21 @@ enum CronInterval(val lowerBound: Int, val upperBound: Int) {
   case WEEKDAY extends CronInterval(1, 7)
 }
 
-sealed trait CronLexem {
-    def raw: String
-}
-case class Wildcard() extends CronLexem {
-    override def raw: String = "*"
-}
-case class Divisor(operand: Int) extends CronLexem {
-    override def raw: String = s"*/$operand"
-}
-case class CRange(bottom: Int, top: Int) extends CronLexem {
-    override def raw: String = s"$bottom-$top"
-}
-case class CList(nums: List[Int]) extends CronLexem {
-    override def raw: String = nums.mkString(",")
-}
-case class Single(num: Int) extends CronLexem {
-    override def raw: String = s"$num"
-}
+sealed trait CronLexem { def raw: String }
+object Asterisk extends CronLexem { override def raw: String = "*" }
+object Slash extends CronLexem { override def raw: String = "/" }
+object Dash extends CronLexem { override def raw: String = "-" }
+object Comma extends CronLexem { override def raw: String = "," }
+case class Number(raw: String) extends CronLexem
 
-case class CronFragment(ci: CronInterval, cl: CronLexem)
+sealed trait CronOperation
+case class Wildcard() extends CronOperation
+case class Divisor(operand: Int) extends CronOperation
+case class CRange(bottom: Int, top: Int) extends CronOperation
+case class CList(items: List[Int]) extends CronOperation
+case class Single(num: Int) extends CronOperation
+
+case class CronFragment(ci: CronInterval, co: CronOperation)
 
 case class Cron(
     minute: CronFragment,
@@ -38,10 +33,10 @@ case class Cron(
 )
 
 object Cron {
-    def apply(l: List[CronFragment]): Option[Cron] = {
-        l match {
-            case List(mi, h, dom, m, w) => Some(Cron(mi, h, dom, m, w))
-            case _ => None
-        }
+  def apply(l: List[CronFragment]): Option[Cron] = {
+    l match {
+      case List(mi, h, dom, m, w) => Some(Cron(mi, h, dom, m, w))
+      case _                      => None
     }
+  }
 }

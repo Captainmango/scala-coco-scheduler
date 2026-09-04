@@ -23,6 +23,10 @@ trait CronLexerAlg[F[_]] {
   def lex(input: String): F[List[CronLexem]]
 }
 
-trait CronValidatorAlg[F[_]] {
-  def validate(input: List[CronLexem]): F[Cron]
+trait CronParserAlg[F[_]] {
+  def parse(input: List[CronLexem]): F[List[CronOperation]]
+}
+
+trait CronEvaluatorAlg[F[_]] {
+  def evaluate(input: List[CronOperation]): F[Cron]
 }
