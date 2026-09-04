@@ -6,7 +6,7 @@ class LexerTest extends munit.FunSuite {
 
     res match {
       case Right(value) =>
-        assertEquals(List(Asterisk), value)
+        assertEquals(List(List(Asterisk)), value)
       case Left(value) => fail("should have succeeded")
     }
   }
@@ -16,7 +16,7 @@ class LexerTest extends munit.FunSuite {
 
     res match {
       case Right(value) =>
-        assertEquals(List(Asterisk, Slash, Comma, Dash, Number("99")), value)
+        assertEquals(List(List(Asterisk, Slash, Comma, Dash, Number("99"))), value)
       case Left(value) => fail("should have succeeded")
     }
   }

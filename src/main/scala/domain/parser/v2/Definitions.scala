@@ -20,11 +20,11 @@ extension [F[_], A](fa: F[A])(using M: Monadish[F]) {
 }
 
 trait CronLexerAlg[F[_]] {
-  def lex(input: String): F[List[CronLexem]]
+  def lex(input: String): F[List[List[CronLexem]]]
 }
 
 trait CronParserAlg[F[_]] {
-  def parse(input: List[CronLexem]): F[List[CronOperation]]
+  def parse(input: List[List[CronLexem]]): F[List[CronOperation]]
 }
 
 trait CronEvaluatorAlg[F[_]] {

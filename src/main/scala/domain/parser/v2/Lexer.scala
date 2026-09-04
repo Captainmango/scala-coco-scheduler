@@ -3,7 +3,7 @@ package domain.parser.v2
 import scala.annotation.tailrec
 
 object CronLexerV2 {
-  def lex(input: String): CronEither[List[CronLexem]] =
+  def lex(input: String): CronEither[List[List[CronLexem]]] = {
     val segments = input.split("\\s+").filter(_.nonEmpty).toList
 
     segments.foldLeft(Right(List.empty): CronEither[List[CronLexem]]) { (accEither, seg) =>
@@ -11,7 +11,12 @@ object CronLexerV2 {
         acc <- accEither
         lexems <- processSegment(seg)
       } yield acc ++ lexems.reverse
+    } match {
+        case Right(value) => Right(List(value))
+        case Left(value) => Left(value)
     }
+  }
+    
 
   private def processSegment(input: String): CronEither[List[CronLexem]] = {
     @tailrec
